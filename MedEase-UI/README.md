@@ -1,94 +1,116 @@
-# MedEase UI
+# MedEase - Medical Education Platform
 
-A modern React application built with Vite, React, and Tailwind CSS.
+Your ultimate medical exam preparation partner. Built with React, Vite, and Tailwind CSS.
 
-## Tech Stack
+## 🚀 Features
 
-- **Vite** - Next generation frontend tooling
-- **React 19** - UI library
-- **Tailwind CSS** - Utility-first CSS framework
-- **PostCSS** - CSS processing
-- **Autoprefixer** - Automatic vendor prefixing
+- 📚 Module-wise Quizzes
+- 🏥 OSPE Practice
+- 📖 Live & Recorded Classes
+- 👨‍🏫 1-on-1 Mentorship
+- 📊 Comprehensive Study Resources
+- 🤖 EaseGPT (Coming Soon)
 
-## Getting Started
+## 🛠️ Tech Stack
 
-### Prerequisites
+- **Framework:** React 19
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS 3
+- **Icons:** Lucide React
+- **Fonts:** Google Fonts (Outfit, Inter)
 
-- Node.js (v18 or higher recommended)
-- npm or yarn
-
-### Installation
+## 📦 Installation
 
 ```bash
+# Install dependencies
 npm install
-```
 
-### Development
-
-Start the development server:
-
-```bash
+# Run development server
 npm run dev
-```
 
-The app will be available at `http://localhost:5173` (or the next available port).
-
-### Build
-
-Build for production:
-
-```bash
+# Build for production
 npm run build
-```
 
-### Preview
-
-Preview the production build:
-
-```bash
+# Preview production build
 npm run preview
 ```
 
-## Project Structure
+## 🌐 Deployment
+
+This project is configured for deployment on Vercel.
+
+### Deploy to Vercel
+
+1. Push your code to GitHub
+2. Import project in Vercel dashboard
+3. Vercel will auto-detect Vite configuration
+4. Click "Deploy"
+
+Or use Vercel CLI:
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+```
+
+## 📁 Project Structure
 
 ```
 MedEase-UI/
+├── public/           # Static assets
 ├── src/
-│   ├── assets/          # Static assets
-│   ├── App.jsx          # Main app component
-│   ├── main.jsx         # Entry point
-│   └── index.css        # Global styles with Tailwind directives
-├── public/              # Public assets
-├── index.html           # HTML template
-├── tailwind.config.js   # Tailwind CSS configuration
-├── postcss.config.js    # PostCSS configuration
-└── vite.config.js       # Vite configuration
+│   ├── components/   # React components
+│   ├── pages/        # Page components
+│   ├── App.jsx       # Main app component
+│   ├── main.jsx      # Entry point
+│   └── index.css     # Global styles
+├── index.html        # HTML template
+├── tailwind.config.js
+├── vite.config.js
+└── vercel.json       # Vercel configuration
 ```
 
-## Tailwind CSS
+## 🎨 Components
 
-Tailwind CSS is configured and ready to use. You can customize the theme in `tailwind.config.js`.
+- **Navbar** - Navigation with mobile menu
+- **Hero** - Landing section with CTA
+- **WhyChoose** - Features showcase
+- **About** - Company information
+- **Plan** - Pricing cards
+- **Testimonial** - Student reviews
+- **CommunityFollow** - Social CTA
+- **Footer** - Site footer
 
-### Usage
+## 🎯 Key Features
 
-Simply use Tailwind utility classes in your components:
+- ✅ Fully responsive (Mobile, Tablet, Desktop)
+- ✅ Modern UI/UX design
+- ✅ Optimized performance
+- ✅ SEO friendly
+- ✅ Accessible components
 
-```jsx
-<div className="bg-blue-500 text-white p-4 rounded-lg">
-  Hello, Tailwind!
-</div>
-```
+## 📱 Responsive Breakpoints
 
-## ESLint
+- Mobile: < 640px
+- Tablet: 640px - 1023px
+- Desktop: 1024px+
 
-This project includes ESLint for code quality. Run the linter:
+## 🎨 Theme Colors
 
-```bash
-npm run lint
-```
+- Primary: `#069285` (Teal)
+- Accent: `#FF7043` (Orange)
 
-## Learn More
+## 📄 License
 
-- [Vite Documentation](https://vite.dev)
-- [React Documentation](https://react.dev)
-- [Tailwind CSS Documentation](https://tailwindcss.com)
+© 2026 MedEase. All rights reserved.
+
+## 👥 Support
+
+For support, email support@medease.com
+
+---
+
+Built with ❤️ by the MedEase Team
