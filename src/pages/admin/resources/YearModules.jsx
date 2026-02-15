@@ -44,6 +44,7 @@ export default function YearModules() {
 
   const breadcrumbItems = [
     { label: 'Resources', path: '/admin/resources' },
+    ...(year.program ? [{ label: year.program.name, path: `/admin/resources/programs/${year.program._id}` }] : []),
     { label: year.name, path: null },
   ];
 

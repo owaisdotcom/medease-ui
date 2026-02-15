@@ -1,16 +1,31 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { ChevronDown, LayoutDashboard, LogOut } from 'lucide-react';
 
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const displayName = user?.name || (user?.email && user.email.split('@')[0]) || 'User';
+  const initial = (displayName || 'U').charAt(0).toUpperCase();
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
+    };
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, []);
 
   const handleLogout = () => {
     logout();
     navigate('/');
     setIsMobileMenuOpen(false);
+    setProfileOpen(false);
   };
 
   const navLinks = (
@@ -55,8 +70,8 @@ function Navbar() {
   );
 
   return (
-    <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-      <div className="flex items-center justify-between">
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between">
         <div className="hidden md:flex items-center space-x-6 lg:space-x-8 flex-1">
           {navLinks}
         </div>
@@ -66,27 +81,46 @@ function Navbar() {
             <img
               src="/logo.png"
               alt="MedEase Logo"
-              className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
+              className="h-9 sm:h-10 md:h-11 lg:h-12 w-auto"
             />
           </Link>
         </div>
 
         <div className="hidden md:flex items-center space-x-4 flex-1 justify-end">
           {user ? (
-            <>
-              <Link
-                to={user.role === 'admin' ? '/admin' : '/student'}
-                className="text-gray-700 font-body hover:text-gray-900 transition-colors text-sm lg:text-base"
-              >
-                {user.role === 'admin' ? 'Admin' : 'Dashboard'}
-              </Link>
+            <div className="relative" ref={profileRef}>
               <button
-                onClick={handleLogout}
-                className="bg-gradient-to-r from-primary to-primary/90 text-white font-body font-semibold px-5 lg:px-6 py-2.5 rounded-lg hover:shadow-lg transition-all text-sm lg:text-base"
+                type="button"
+                onClick={() => setProfileOpen((o) => !o)}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors"
               >
-                Logout
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
+                  {initial}
+                </div>
+                <span className="text-sm font-medium text-gray-700">Hi, {displayName}</span>
+                <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
               </button>
-            </>
+              {profileOpen && (
+                <div className="absolute right-0 top-full mt-1 py-1 min-w-[10rem] rounded-lg bg-white border border-gray-200 shadow-lg z-50">
+                  <Link
+                    to={user.role === 'admin' ? '/admin' : '/student'}
+                    onClick={() => setProfileOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    {user.role === 'admin' ? 'Admin' : 'Dashboard'}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 text-left"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               <Link
@@ -121,7 +155,7 @@ function Navbar() {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="md:hidden mt-4 pb-4 space-y-3 border-t border-gray-200 pt-4">
+        <div className="md:hidden container mx-auto px-4 sm:px-6 lg:px-8 mt-2 pb-3 space-y-3 border-t border-gray-200 pt-3">
           {[
             { to: '/', label: 'Home' },
             { to: '/about', label: 'About Us' },
@@ -141,21 +175,31 @@ function Navbar() {
           ))}
           <div className="flex flex-col space-y-2 pt-2">
             {user ? (
-              <>
-                <Link
-                  to={user.role === 'admin' ? '/admin' : '/student'}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-gray-700 font-body hover:text-gray-900 py-2 px-4"
-                >
-                  {user.role === 'admin' ? 'Admin' : 'Dashboard'}
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="bg-gradient-to-r from-primary to-primary/90 text-white font-body font-semibold px-4 py-2.5 rounded-lg text-left"
-                >
-                  Logout
-                </button>
-              </>
+              <div className="px-4 py-2 border-t border-gray-100 pt-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
+                    {initial}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">Hi, {displayName}</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Link
+                    to={user.role === 'admin' ? '/admin' : '/student'}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-2 py-2.5 px-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    {user.role === 'admin' ? 'Admin' : 'Dashboard'}
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 py-2.5 px-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 rounded-lg text-left"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              </div>
             ) : (
               <>
                 <Link

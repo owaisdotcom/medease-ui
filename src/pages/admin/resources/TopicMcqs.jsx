@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../../api/client';
 import ResourceBreadcrumb from '../../../components/admin/ResourceBreadcrumb';
-import McqForm from '../../../components/admin/McqForm';
-import BulkMcqModal from '../../../components/admin/BulkMcqModal';
 import Modal from '../../../components/admin/Modal';
-import { Plus, Pencil, Trash2, Upload, HelpCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, Upload, HelpCircle, Youtube } from 'lucide-react';
+
+const basePath = (y, m, s, t) => `/admin/resources/years/${y}/modules/${m}/subjects/${s}/topics/${t}`;
 
 export default function TopicMcqs() {
   const { yearId, moduleId, subjectId, topicId } = useParams();
@@ -15,8 +15,6 @@ export default function TopicMcqs() {
   const [topic, setTopic] = useState(null);
   const [mcqs, setMcqs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [mcqForm, setMcqForm] = useState(null);
-  const [bulkOpen, setBulkOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const loadMeta = async () => {
@@ -46,6 +44,7 @@ export default function TopicMcqs() {
 
   const breadcrumbItems = [
     { label: 'Resources', path: '/admin/resources' },
+    ...(year.program ? [{ label: year.program.name, path: `/admin/resources/programs/${year.program._id}` }] : []),
     { label: year.name, path: `/admin/resources/years/${yearId}` },
     { label: module_.name, path: `/admin/resources/years/${yearId}/modules/${moduleId}` },
     { label: subject.name, path: `/admin/resources/years/${yearId}/modules/${moduleId}/subjects/${subjectId}` },
@@ -61,12 +60,18 @@ export default function TopicMcqs() {
           <p className="text-sm text-gray-500 mt-1">MCQs for this topic. Add single MCQs or bulk import (text, image-based, guess-until-correct).</p>
         </div>
         <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setBulkOpen(true)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-primary/30 text-primary font-medium hover:bg-primary/5 transition-colors">
+          <Link
+            to={`${basePath(yearId, moduleId, subjectId, topicId)}/mcqs/bulk`}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-primary/30 text-primary font-medium hover:bg-primary/5 transition-colors"
+          >
             <Upload className="w-5 h-5" /> Bulk import
-          </button>
-          <button type="button" onClick={() => setMcqForm({})} className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-xl font-medium shadow-sm hover:shadow transition-shadow">
+          </Link>
+          <Link
+            to={`${basePath(yearId, moduleId, subjectId, topicId)}/mcqs/new`}
+            className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-xl font-medium shadow-sm hover:shadow transition-colors"
+          >
             <Plus className="w-5 h-5" /> Add MCQ
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -83,12 +88,15 @@ export default function TopicMcqs() {
                 </div>
                 <div className="min-w-0">
                   <p className="font-medium text-gray-900 line-clamp-2">{mcq.question}</p>
-                  <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">{mcq.type}</span>
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    <span className="inline-block text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">{mcq.type}</span>
+                    {mcq.videoUrl && <span className="inline-flex items-center gap-0.5 text-xs text-primary" title="Has video"><Youtube className="w-3.5 h-3.5" /></span>}
+                  </div>
                   {mcq.explanation && <p className="text-sm text-gray-500 mt-1 line-clamp-1">{mcq.explanation}</p>}
                 </div>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
-                <button type="button" onClick={() => setMcqForm({ mcq })} className="p-2 text-gray-500 hover:text-primary rounded-lg" title="Edit"><Pencil className="w-4 h-4" /></button>
+                <Link to={`${basePath(yearId, moduleId, subjectId, topicId)}/mcqs/${mcq._id}/edit`} className="p-2 text-gray-500 hover:text-primary rounded-lg" title="Edit"><Pencil className="w-4 h-4" /></Link>
                 <button type="button" onClick={() => setDeleteConfirm(mcq)} className="p-2 text-gray-500 hover:text-red-600 rounded-lg" title="Delete"><Trash2 className="w-4 h-4" /></button>
               </div>
             </li>
@@ -100,15 +108,13 @@ export default function TopicMcqs() {
             <p className="text-gray-500 font-medium">No MCQs yet</p>
             <p className="text-sm text-gray-400 mt-1">Add an MCQ or use bulk import (Question / 4 options with one &quot;(correct)&quot; / explanation).</p>
             <div className="flex gap-2 justify-center mt-4">
-              <button type="button" onClick={() => setMcqForm({})} className="text-primary font-medium hover:underline">Add MCQ</button>
-              <button type="button" onClick={() => setBulkOpen(true)} className="text-primary font-medium hover:underline">Bulk import</button>
+              <Link to={`${basePath(yearId, moduleId, subjectId, topicId)}/mcqs/new`} className="text-primary font-medium hover:underline">Add MCQ</Link>
+              <Link to={`${basePath(yearId, moduleId, subjectId, topicId)}/mcqs/bulk`} className="text-primary font-medium hover:underline">Bulk import</Link>
             </div>
           </div>
         )}
       </div>
 
-      {mcqForm && <McqForm topicId={topicId} mcq={mcqForm.mcq || null} onSave={loadMcqs} onClose={() => setMcqForm(null)} />}
-      {bulkOpen && <BulkMcqModal topicId={topicId} onSave={loadMcqs} onClose={() => setBulkOpen(false)} />}
       {deleteConfirm && (
         <Modal open onClose={() => setDeleteConfirm(null)} title="Delete MCQ">
           <p className="text-gray-600 mb-4">Delete this MCQ?</p>

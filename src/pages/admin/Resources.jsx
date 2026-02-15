@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/client';
 import { YearForm, ModuleForm, SubjectForm, TopicForm } from '../../components/admin/ResourceForms';
 import Modal from '../../components/admin/Modal';
 import McqForm from '../../components/admin/McqForm';
 import BulkMcqModal from '../../components/admin/BulkMcqModal';
-import OspeForm from '../../components/admin/OspeForm';
 import { ChevronDown, ChevronRight, Pencil, Trash2, Plus, FileText, List } from 'lucide-react';
 
 export default function AdminResources() {
@@ -37,7 +37,6 @@ export default function AdminResources() {
   const [topicForm, setTopicForm] = useState(null);
   const [mcqForm, setMcqForm] = useState(null);
   const [bulkMcqTopicId, setBulkMcqTopicId] = useState(null);
-  const [ospeForm, setOspeForm] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const refreshModules = (yearId) => loadModules(yearId);
@@ -101,7 +100,7 @@ export default function AdminResources() {
                   </button>
                   <div className="flex items-center gap-2">
                     <button type="button" onClick={() => setModuleForm({ yearId: year._id, module: mod })} className="p-1.5 text-gray-500 hover:text-primary" title="Edit"><Pencil className="w-4 h-4" /></button>
-                    <button type="button" onClick={() => setOspeForm({ moduleId: mod._id })} className="text-primary text-sm font-medium">+ OSPE</button>
+                    <Link to={`/admin/resources/years/${year._id}/modules/${mod._id}/ospes`} className="text-primary text-sm font-medium">+ OSPE</Link>
                     <button type="button" onClick={() => setSubjectForm({ moduleId: mod._id })} className="text-primary text-sm font-medium">+ Subject</button>
                     <button type="button" onClick={() => setDeleteConfirm({ type: 'module', id: mod._id, parentId: year._id })} className="p-1.5 text-gray-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                   </div>
@@ -117,7 +116,7 @@ export default function AdminResources() {
                             <div key={ospe._id} className="flex items-center gap-2 bg-white border rounded-lg px-3 py-2 text-sm">
                               <List className="w-4 h-4 text-primary" />
                               <span>{ospe.name}</span>
-                              <button type="button" onClick={() => setOspeForm({ moduleId: mod._id, ospe })} className="text-primary">Edit</button>
+                              <Link to={`/admin/resources/years/${year._id}/modules/${mod._id}/ospes/${ospe._id}/edit`} className="text-primary hover:underline">Edit</Link>
                               <button type="button" onClick={() => setDeleteConfirm({ type: 'ospe', id: ospe._id, parentId: mod._id })} className="text-red-600">Delete</button>
                             </div>
                           ))}
@@ -190,7 +189,6 @@ export default function AdminResources() {
       {topicForm && <TopicForm subjectId={topicForm.subjectId} topic={topicForm.topic ?? null} onSave={() => refreshTopics(topicForm.subjectId)} onClose={() => setTopicForm(null)} />}
       {mcqForm && <McqForm topicId={mcqForm.topicId} mcq={mcqForm.mcq ?? null} onSave={() => refreshMcqs(mcqForm.topicId)} onClose={() => setMcqForm(null)} />}
       {bulkMcqTopicId && <BulkMcqModal topicId={bulkMcqTopicId} onSave={() => { refreshMcqs(bulkMcqTopicId); }} onClose={() => setBulkMcqTopicId(null)} />}
-      {ospeForm && <OspeForm moduleId={ospeForm.moduleId} ospe={ospeForm.ospe ?? null} onSave={() => refreshOspes(ospeForm.moduleId)} onClose={() => setOspeForm(null)} />}
 
       {/* Delete confirmation */}
       {deleteConfirm && (

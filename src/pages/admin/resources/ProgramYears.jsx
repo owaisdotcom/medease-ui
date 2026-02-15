@@ -1,27 +1,38 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import api from '../../../api/client';
 import ResourceBreadcrumb from '../../../components/admin/ResourceBreadcrumb';
 import { YearForm } from '../../../components/admin/ResourceForms';
 import Modal from '../../../components/admin/Modal';
 import { Plus, Pencil, Trash2, FolderTree } from 'lucide-react';
 
-export default function YearsList() {
+export default function ProgramYears() {
+  const { programId } = useParams();
+  const [program, setProgram] = useState(null);
   const [years, setYears] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
-  const load = () => api.get('/admin/years').then(({ data }) => setYears(data)).catch(() => setYears([]));
+  const loadProgram = () =>
+    api.get('/admin/programs').then(({ data }) => {
+      const p = data.find((x) => x._id === programId);
+      setProgram(p || null);
+    }).catch(() => setProgram(null));
+  const loadYears = () =>
+    api.get('/admin/years', { params: { programId } }).then(({ data }) => setYears(data)).catch(() => setYears([]));
+
+  const load = () => Promise.all([loadProgram(), loadYears()]);
 
   useEffect(() => {
+    if (!programId) return;
     load().finally(() => setLoading(false));
-  }, []);
+  }, [programId]);
 
   const handleDelete = async (id) => {
     try {
       await api.delete(`/admin/years/${id}`);
-      load();
+      loadYears();
       setDeleteConfirm(null);
     } catch (_) {}
   };
@@ -33,14 +44,20 @@ export default function YearsList() {
       </div>
     );
   }
+  if (!program) return <p className="text-gray-500">Program not found.</p>;
+
+  const breadcrumbItems = [
+    { label: 'Resources', path: '/admin/resources' },
+    { label: program.name, path: null },
+  ];
 
   return (
     <>
-      <ResourceBreadcrumb items={[{ label: 'Resources', path: null }]} />
+      <ResourceBreadcrumb items={breadcrumbItems} />
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-heading font-bold text-gray-900">Years</h1>
-          <p className="text-sm text-gray-500 mt-1">Select a year to manage its modules, subjects, topics and content.</p>
+          <p className="text-sm text-gray-500 mt-1">{program.name} — select a year to manage its modules, subjects, topics and content.</p>
         </div>
         <button
           type="button"
@@ -51,61 +68,7 @@ export default function YearsList() {
         </button>
       </div>
 
-      {/* Desktop: table listing */}
-      <div className="hidden lg:block bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-200 bg-gray-50/80">
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Name</th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Program</th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Order</th>
-              <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {years.map((year) => (
-              <tr key={year._id} className="border-b border-gray-100 hover:bg-gray-50/50">
-                <td className="py-3 px-4">
-                  <Link to={`/admin/resources/years/${year._id}`} className="font-medium text-gray-900 hover:text-primary">
-                    {year.name}
-                  </Link>
-                </td>
-                <td className="py-3 px-4 text-sm text-gray-500">{year.program?.name ?? '—'}</td>
-                <td className="py-3 px-4 text-sm text-gray-500">{year.order}</td>
-                <td className="py-3 px-4 text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setFormOpen(year)}
-                      className="p-2 text-gray-500 hover:text-primary hover:bg-primary/5 rounded-lg"
-                      title="Edit"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDeleteConfirm(year)}
-                      className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                    <Link
-                      to={`/admin/resources/years/${year._id}`}
-                      className="text-sm font-medium text-primary hover:underline ml-1"
-                    >
-                      Open →
-                    </Link>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile: cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:hidden">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {years.map((year) => (
           <div
             key={year._id}
@@ -118,7 +81,7 @@ export default function YearsList() {
                 </div>
                 <div>
                   <h2 className="font-heading font-semibold text-gray-900 group-hover:text-primary transition-colors">{year.name}</h2>
-                  <p className="text-xs text-gray-500">{year.program?.name ? `Program: ${year.program.name}` : `Order: ${year.order}`}</p>
+                  <p className="text-xs text-gray-500">Order: {year.order}</p>
                 </div>
               </div>
             </Link>
@@ -153,7 +116,7 @@ export default function YearsList() {
       {years.length === 0 && (
         <div className="text-center py-16 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
           <FolderTree className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 font-medium">No years yet</p>
+          <p className="text-gray-500 font-medium">No years in this program</p>
           <p className="text-sm text-gray-400 mt-1">Add a year to start building the academic structure.</p>
           <button type="button" onClick={() => setFormOpen('new')} className="mt-4 text-primary font-medium hover:underline">
             Add first year
@@ -161,7 +124,14 @@ export default function YearsList() {
         </div>
       )}
 
-      {formOpen && <YearForm year={formOpen === 'new' ? null : formOpen} onSave={load} onClose={() => setFormOpen(null)} />}
+      {formOpen && (
+        <YearForm
+          year={formOpen === 'new' ? null : formOpen}
+          programId={programId}
+          onSave={loadYears}
+          onClose={() => setFormOpen(null)}
+        />
+      )}
       {deleteConfirm && (
         <Modal open onClose={() => setDeleteConfirm(null)} title="Delete year">
           <p className="text-gray-600 mb-4">Delete &quot;{deleteConfirm.name}&quot;? This will remove all modules, subjects, topics and related content under it.</p>

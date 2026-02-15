@@ -24,14 +24,30 @@ import StudentPayments from './pages/student/Payments';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminUsers from './pages/admin/Users';
 import AdminPayments from './pages/admin/Payments';
-import AdminProff from './pages/admin/Proff';
+import ProffLayout from './pages/admin/proff/ProffLayout';
+import ProffDashboard from './pages/admin/proff/ProffDashboard';
+import ProffJsmuYears from './pages/admin/proff/ProffJsmuYears';
+import ProffJsmuYearDetail from './pages/admin/proff/ProffJsmuYearDetail';
+import ProffOtherYears from './pages/admin/proff/ProffOtherYears';
+import ProffOtherYearDetail from './pages/admin/proff/ProffOtherYearDetail';
+import ProffOtherSubjectDetail from './pages/admin/proff/ProffOtherSubjectDetail';
 import AdminPackages from './pages/admin/Packages';
+import AdminResources from './pages/admin/Resources';
 import ResourceLayout from './pages/admin/resources/ResourceLayout';
-import YearsList from './pages/admin/resources/YearsList';
+import ProgramsList from './pages/admin/resources/ProgramsList';
+import ProgramYears from './pages/admin/resources/ProgramYears';
 import YearModules from './pages/admin/resources/YearModules';
 import ModuleContent from './pages/admin/resources/ModuleContent';
 import SubjectTopics from './pages/admin/resources/SubjectTopics';
 import TopicMcqs from './pages/admin/resources/TopicMcqs';
+import McqFormPage from './pages/admin/resources/McqFormPage';
+import BulkMcqPage from './pages/admin/resources/BulkMcqPage';
+import ModuleOspesList from './pages/admin/resources/ModuleOspesList';
+import OspeFormPage from './pages/admin/resources/OspeFormPage';
+import YearsList from './pages/admin/resources/YearsList';
+import ModulesList from './pages/admin/resources/ModulesList';
+import SubjectsList from './pages/admin/resources/SubjectsList';
+import TopicsList from './pages/admin/resources/TopicsList';
 
 function App() {
   return (
@@ -65,13 +81,32 @@ function App() {
             <Route path="users" element={<AdminUsers />} />
             <Route path="payments" element={<AdminPayments />} />
             <Route path="resources" element={<ResourceLayout />}>
-            <Route index element={<YearsList />} />
+            <Route index element={<ProgramsList />} />
+            <Route path="hierarchy" element={<AdminResources />} />
+            <Route path="programs/:programId" element={<ProgramYears />} />
+            <Route path="years" element={<YearsList />} />
             <Route path="years/:yearId" element={<YearModules />} />
+            <Route path="modules" element={<ModulesList />} />
+            <Route path="subjects" element={<SubjectsList />} />
+            <Route path="topics" element={<TopicsList />} />
             <Route path="years/:yearId/modules/:moduleId" element={<ModuleContent />} />
+            <Route path="years/:yearId/modules/:moduleId/ospes" element={<ModuleOspesList />} />
+            <Route path="years/:yearId/modules/:moduleId/ospes/new" element={<OspeFormPage />} />
+            <Route path="years/:yearId/modules/:moduleId/ospes/:ospeId/edit" element={<OspeFormPage />} />
             <Route path="years/:yearId/modules/:moduleId/subjects/:subjectId" element={<SubjectTopics />} />
+            <Route path="years/:yearId/modules/:moduleId/subjects/:subjectId/topics/:topicId/mcqs/bulk" element={<BulkMcqPage />} />
+            <Route path="years/:yearId/modules/:moduleId/subjects/:subjectId/topics/:topicId/mcqs/new" element={<McqFormPage />} />
+            <Route path="years/:yearId/modules/:moduleId/subjects/:subjectId/topics/:topicId/mcqs/:mcqId/edit" element={<McqFormPage />} />
             <Route path="years/:yearId/modules/:moduleId/subjects/:subjectId/topics/:topicId" element={<TopicMcqs />} />
           </Route>
-            <Route path="proff" element={<AdminProff />} />
+          <Route path="proff" element={<ProffLayout />}>
+            <Route index element={<ProffDashboard />} />
+            <Route path="jsmu" element={<ProffJsmuYears />} />
+            <Route path="jsmu/years/:yearId" element={<ProffJsmuYearDetail />} />
+            <Route path="other" element={<ProffOtherYears />} />
+            <Route path="other/years/:yearId" element={<ProffOtherYearDetail />} />
+            <Route path="other/years/:yearId/subjects/:subjectId" element={<ProffOtherSubjectDetail />} />
+          </Route>
             <Route path="packages" element={<AdminPackages />} />
           </Route>
 

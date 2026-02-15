@@ -9,7 +9,6 @@ const OSPE_TYPES = [
 
 export default function OspeForm({ moduleId, ospe, onSave, onClose }) {
   const [name, setName] = useState(ospe?.name ?? '');
-  const [type, setType] = useState(ospe?.type ?? 'picture_mcq');
   const [questions, setQuestions] = useState(ospe?.questions?.length ? ospe.questions.map((q) => ({ questionText: q.questionText, imageUrl: q.imageUrl ?? '', type: q.type || 'picture_mcq', options: [...(q.options || []), '', '', ''].slice(0, 4), correctIndex: q.correctIndex ?? 0, expectedAnswer: q.expectedAnswer ?? '' })) : [{ questionText: '', imageUrl: '', type: 'picture_mcq', options: ['', '', '', ''], correctIndex: 0, expectedAnswer: '' }]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(null);
@@ -36,7 +35,6 @@ export default function OspeForm({ moduleId, ospe, onSave, onClose }) {
     e.preventDefault();
     const payload = {
       name,
-      type,
       questions: questions.map((q, order) => ({
         questionText: q.questionText,
         imageUrl: q.imageUrl || undefined,
@@ -63,14 +61,6 @@ export default function OspeForm({ moduleId, ospe, onSave, onClose }) {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
           <input value={name} onChange={(e) => setName(e.target.value)} required className="w-full px-3 py-2 border rounded-lg" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Default type</label>
-          <select value={type} onChange={(e) => setType(e.target.value)} className="w-full px-3 py-2 border rounded-lg">
-            {OSPE_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>{t.label}</option>
-            ))}
-          </select>
         </div>
         <div>
           <div className="flex items-center justify-between mb-2">

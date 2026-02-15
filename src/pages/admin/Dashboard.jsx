@@ -26,8 +26,8 @@ export default function AdminDashboard() {
               <Link to="/admin/payments" className="text-primary text-sm font-medium">View</Link>
             </div>
             <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <p className="text-gray-500 text-sm">Years / Modules / Topics</p>
-              <p className="text-xl font-bold text-gray-900">{stats.yearCount} / {stats.moduleCount} / {stats.topicCount}</p>
+              <p className="text-gray-500 text-sm">Programs / Years / Modules / Topics</p>
+              <p className="text-xl font-bold text-gray-900">{stats.programCount ?? 0} / {stats.yearCount} / {stats.moduleCount} / {stats.topicCount}</p>
               <Link to="/admin/resources" className="text-primary text-sm font-medium">Manage</Link>
             </div>
             <div className="bg-white rounded-xl border border-gray-200 p-4">

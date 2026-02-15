@@ -47,6 +47,7 @@ export default function SubjectTopics() {
 
   const breadcrumbItems = [
     { label: 'Resources', path: '/admin/resources' },
+    ...(year.program ? [{ label: year.program.name, path: `/admin/resources/programs/${year.program._id}` }] : []),
     { label: year.name, path: `/admin/resources/years/${yearId}` },
     { label: module_.name, path: `/admin/resources/years/${yearId}/modules/${moduleId}` },
     { label: subject.name, path: null },
